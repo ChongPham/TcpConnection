@@ -149,7 +149,7 @@ func main() {
 	}()
 
 	for {
-		// thiet lap dedicated connection channel
+		// thiet lap dedicated connection
 		conn, err := listener.Accept()
 		if err != nil {
 			log.Fatal(err)
