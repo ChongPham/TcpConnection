@@ -119,7 +119,7 @@ func handleConnection(conn net.Conn) {
 		//rely to client
 		var errRes = WriteCommand(cmd, conn)
 		if errRes != nil {
-			log.Printf("err write:", errRes)
+			log.Print("err write:", errRes)
 		}
 	}
 }
