@@ -80,13 +80,30 @@ func (p *Pool) Shutdown() {
 	p.wg.Wait()       // chờ tất cả worker xong việc
 }
 
+func ReadCommand(conn net.Conn) (string, error) {
+	var buf []byte = make([]byte, 512)
+	n, err := conn.Read(buf[:])
+	if err != nil {
+		return "", err
+	}
+
+	return string(buf[:n]), nil
+}
+
+func WriteCommand(cmd string, conn net.Conn) error {
+	_, err := conn.Write([]byte(cmd))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
-	//read data from client
-	var buffer []byte = make([]byte, 1000)
 
 	for {
-		_, err := conn.Read(buffer)
+		//read data from client
+		cmd, err := ReadCommand(conn)
 		if err != nil {
 			if err == io.EOF {
 				log.Println("Client closed connection:", conn.RemoteAddr())
@@ -100,8 +117,10 @@ func handleConnection(conn net.Conn) {
 		time.Sleep(time.Second * 2)
 
 		//rely to client
-		response := "HTTP/1.1 200 OK\r\nContent-Length: 12\r\n\r\nhello world!\r\n/"
-		conn.Write([]byte(response))
+		var errRes = WriteCommand(cmd, conn)
+		if errRes != nil {
+			log.Printf("err write:", errRes)
+		}
 	}
 }
 
