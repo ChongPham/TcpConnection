@@ -140,6 +140,7 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
+	// Xử lí đóng poll
 	go func() {
 		<-sigChan
 		log.Println("Shutting down server...")
